@@ -37,6 +37,7 @@ const Header = () => {
 
       <Logo />
 
+
       {isWideVersion && (
         <SearchBox />
       )}

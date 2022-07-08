@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 
 import { Button, Flex, Stack } from "@chakra-ui/react";
 import Input from '../components/Form/Input';
+import Link from 'next/link';
 
 const SignIn: NextPage = () => {
   return (
@@ -25,14 +26,16 @@ const SignIn: NextPage = () => {
           <Input type='password' name='password' label='Password' />
         </Stack>
 
-        <Button
-          type='submit'
-          mt={6}
-          colorScheme='pink'
-          size={'lg'}
-        >
-          Entrar
-        </Button>
+        <Link href={"/dashboard"} passHref>
+          <Button
+            type='submit'
+            mt={6}
+            colorScheme='pink'
+            size={'lg'}
+          >
+            Entrar
+          </Button>
+        </Link>
       </Flex>
     </Flex>
   )
