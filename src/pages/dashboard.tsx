@@ -71,7 +71,7 @@ const Dashboard: NextPage = () => {
         w={'100%'}
         my={'6'}
         maxWidth={1480}
-        mx={'auto'}
+        mx='auto'
         px={'6'}
       >
         <Sidebar />
