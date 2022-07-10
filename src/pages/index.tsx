@@ -1,10 +1,36 @@
 import type { NextPage } from 'next'
+import { SubmitHandler, useForm } from "react-hook-form";
+
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Button, Flex, Stack } from "@chakra-ui/react";
-import Input from '../components/Form/Input';
-import Link from 'next/link';
+import { Input } from '../components/Form/Input';
+import Router from 'next/router';
+
+type SingInFormData = {
+  email: string;
+  password: string;
+}
+
+const signInFormSchema = yup.object({
+  email: yup.string().required('E-mail obrigatório!').email('E-mail inválido'),
+  password: yup.string().required('Password obrigatório')
+})
 
 const SignIn: NextPage = () => {
+
+  const { register, handleSubmit, formState } = useForm({
+    resolver: yupResolver(signInFormSchema)
+  })
+  const errors = formState.errors
+
+  const handleSignIn: SubmitHandler<SingInFormData> = async () => {
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    formState.isSubmitted && Router.push('/dashboard')
+  }
+
   return (
     <Flex
       w="100vw"
@@ -20,22 +46,32 @@ const SignIn: NextPage = () => {
         p={8}
         borderRadius={8}
         flexDir='column'
+        onSubmit={handleSubmit(handleSignIn)}
       >
         <Stack spacing={4}>
-          <Input type='email' name='email' label='E-mail' />
-          <Input type='password' name='password' label='Password' />
+          <Input
+            type='email'
+            label='E-mail'
+            error={errors.email}
+            {...register('email')}
+          />
+          <Input
+            type='password'
+            label='Senha'
+            error={errors.password}
+            {...register('password')}
+          />
         </Stack>
 
-        <Link href={"/dashboard"} passHref>
-          <Button
-            type='submit'
-            mt={6}
-            colorScheme='pink'
-            size={'lg'}
-          >
-            Entrar
-          </Button>
-        </Link>
+        <Button
+          type='submit'
+          mt={6}
+          colorScheme='pink'
+          size={'lg'}
+          isLoading={formState.isSubmitting}
+        >
+          Entrar
+        </Button>
       </Flex>
     </Flex>
   )
