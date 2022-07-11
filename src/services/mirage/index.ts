@@ -1,4 +1,4 @@
-import { createServer, Factory, Model, Response } from "miragejs";
+import { createServer, Factory, Model, Response, ActiveModelSerializer } from "miragejs";
 import { faker } from '@faker-js/faker'
 
 type User = {
@@ -7,13 +7,11 @@ type User = {
   created_at: string
 }
 
-type PagesParams = {
-  page: number
-  per_page: number
-}
-
 export function makeServer() {
   const server = createServer({
+    serializers: {
+      application: ActiveModelSerializer
+    },
     models: {
       user: Model.extend<Partial<User>>({})
     },
@@ -32,7 +30,7 @@ export function makeServer() {
     }
     ,
     seeds(server) {
-      server.createList('user', 200)
+      server.createList('user', 12)
     },
 
     routes() {
@@ -41,7 +39,7 @@ export function makeServer() {
 
       this.get('/users', function (schema, request) {
 
-        const { page = 1, per_page = 10 } = request.queryParams
+        const { page = 1, per_page = 10 } = request.queryParams!
 
         const total = schema.all('user').length
         const pageStart = (Number(page) - 1) * Number(per_page)   // For each page, the first element of the qeue

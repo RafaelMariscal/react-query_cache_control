@@ -20,7 +20,7 @@ function generatePagesArray(from: number, to: number) {
 
 const Pagination = ({ totalCountOfRegisters, registerPerPage = 10, currentPage = 1, onPageChange }: PaginationProps) => {
 
-  const lastPage = Math.floor(totalCountOfRegisters / registerPerPage)
+  const lastPage = Math.ceil(totalCountOfRegisters / registerPerPage)
 
   const previousPages = currentPage > 0
     ? generatePagesArray(currentPage - 1 - siblingsCount, currentPage - 1)
