@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { useQuery } from "react-query";
 
 import { Box, Button, Checkbox, Flex, Heading, Icon, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useBreakpointValue } from '@chakra-ui/react'
 
@@ -8,49 +8,16 @@ import Header from '../../components/Header'
 import Sidebar from '../../components/Sidebar'
 import { RiAddLine, RiPencilLine } from 'react-icons/ri'
 import Pagination from '../../components/Pagination'
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: string;
-}
-
-type Data = {
-  users: User[]
-}
+import useUsers from '../../services/hooks/useUsers';
 
 const UserList: NextPage = () => {
-
-  const { data, isLoading, error } = useQuery('users', async () => {
-    const response = await fetch('http://localhost:3000/api/users')
-    const data: Data = await response.json()
-
-    const users: User[] = data.users.map(user => {
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: new Date(user.createdAt).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        })
-      }
-    })
-
-    return users
-  }, {
-    staleTime: 1000 * 60 * 15// 15 minutes
-  }
-  )
-
+  const [page, setPage] = useState(1)
+  const { data, isLoading, isFetching, error } = useUsers(page)
 
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true
   })
-
 
   return (
     <Box>
@@ -60,7 +27,12 @@ const UserList: NextPage = () => {
 
         <Box flex={'1'} borderRadius={[0, 8]} bg={'gray.800'} p={'6'} >
           <Flex mb={'8'} justify={'space-between '} align={'center'}>
-            <Heading size={'lg'} fontWeight={'normarl'}>Usuários</Heading>
+            <Heading size={'lg'} fontWeight={'normarl'}>
+              Usuários
+              {
+                !isLoading && isFetching && <Spinner size={'sm'} color={'gray.500'} ml={'4'}></Spinner>
+              }
+            </Heading>
 
             <Link href={"/users/create"} passHref>
               <Button
@@ -100,7 +72,7 @@ const UserList: NextPage = () => {
                   <Tbody>
                     {
                       data && (
-                        data.map((user) => {
+                        data.users.map((user) => {
                           return (
                             <Tr key={user.id}>
                               <Td px={['4', '4', '6']}>
@@ -132,7 +104,11 @@ const UserList: NextPage = () => {
                   </Tbody>
                 </Table>
 
-                <Pagination />
+                <Pagination
+                  totalCountOfRegisters={data!.totalCount}
+                  currentPage={page}
+                  onPageChange={setPage}
+                />
               </>
             )
           }
